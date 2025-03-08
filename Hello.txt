@@ -1,0 +1,33 @@
+DB structure -> 
+
+User -> roles (owner or member)
+user_id (PK), email, role, created_at, payment_method_id, etc
+
+SubscriptionServices:  service_id (PK), name, description, monthly_cost, regions_available, etc
+
+UserSubscriptions: user_subscription_id (PK), user_id (FK to Users), service_id (FK to SubscriptionServices), encrypted_credentials, slots_total, slots_available, cost_per_slot, created_at, updated_at, is_active.
+
+PoolMembers: pool_member_id (PK), user_id (FK to Users), user_subscription_id (FK to UserSubscriptions), joined_at, payment_status, access_status (pending, granted, revoked), last_payment_date.
+
+Payments: payment_id (PK), pool_member_id (FK to PoolMembers), amount, escrow_status (held, released, refunded), payment_date, release_date.
+
+Disputes: dispute_id (PK), reporter_user_id (FK to Users), reported_user_id (FK to Users), user_subscription_id (FK to UserSubscriptions), description, status (open, resolved), created_at, resolved_at.
+
+
+Apis
+
+ POST /api/auth/signup: Create a new user.
+
+- POST /api/auth/login: Authenticate user.
+
+- POST /api/subscriptions: For owners to create a new UserSubscription.
+
+- GET /api/subscriptions/available: For members to browse available subscriptions.
+
+- POST /api/subscriptions/join: For members to join a subscription, which triggers matching and payment.
+
+- POST /api/payment/create-intent: To create a payment intent with the payment gateway.
+
+- POST /api/access/{subscription_id}: For members to retrieve access credentials (after payment is confirmed).
+
+- POST /api/disputes: To file a dispute.
