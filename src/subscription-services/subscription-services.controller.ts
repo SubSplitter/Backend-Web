@@ -1,5 +1,5 @@
 // src/subscription-services/subscription-services.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete,UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SubscriptionServicesService } from './subscription-services.service';
 import { CreateSubscriptionServiceDto } from './dto/create-subscription-service.dto';
 import { UpdateSubscriptionServiceDto } from './dto/update-subscription-service.dto';;

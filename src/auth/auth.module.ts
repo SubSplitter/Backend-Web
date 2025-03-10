@@ -3,16 +3,20 @@ import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { UserService } from 'src/users/users.service';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
 import { UserModule } from 'src/users/users.module';
+import { UserSubscriptionsService } from 'src/user-subscriptions/user-subscription.service';
+import { UserSubscriptionsModule } from 'src/user-subscriptions/user-subscription.module';
 
 @Module({
   imports: [
     // Import DrizzleModule to ensure UserService has access to the database
     DrizzleModule,
-    UserModule
+    UserModule,
+    //UserSubscriptionsModule
   ],
   providers: [
     KindeAuthGuard,
     UserService,
+    UserSubscriptionsService
   ],
   exports: [
     KindeAuthGuard,
