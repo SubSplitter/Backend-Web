@@ -1,57 +1,57 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
-import { UserSubscriptionsService } from './pools.service';
-import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
-import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
+import { PoolsService } from './pools.service';
+import { CreatePoolDto } from './dto/create-pool.dto';
+import { UpdatePoolDto } from './dto/update-pool.dto';
 import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { UserService } from 'src/users/users.service';
 import { users } from 'src/drizzle';
 
 @Controller('api/subscriptions')
-export class UserSubscriptionsController {
-  constructor(private readonly userSubscriptionsService: UserSubscriptionsService,
+export class PoolsController {
+  constructor(private readonly PoolsService: PoolsService,
     private readonly userService: UserService) {}
   
   @Post()
 @UseGuards(KindeAuthGuard)
 async create(
   @Req() request: Request,
-  @Body() createUserSubscriptionDto: CreateUserSubscriptionDto
+  @Body() CreatePoolDto: CreatePoolDto
 ) {
   // You'll need to add the custom typing for the request as discussed earlier
   const userEmail = (request as any).user_email;
   console.log(userEmail);
-  createUserSubscriptionDto.userId = await this.userService.getUserUuidByRequestEmail(request);
-  console.log(createUserSubscriptionDto.userId);
+  CreatePoolDto.userId = await this.userService.getUserUuidByRequestEmail(request);
+  console.log(CreatePoolDto.userId);
   
   // You can now use the email with your DTO
-  return this.userSubscriptionsService.create({
-    ...createUserSubscriptionDto,
+  return this.PoolsService.create({
+    ...CreatePoolDto,
    // Assuming your service needs this
   });
 }
 
   @Get()
   findAll() {
-    return this.userSubscriptionsService.findAll();
+    return this.PoolsService.findAll();
   }
 
   @Get('available')
   findAvailable() {
-    return this.userSubscriptionsService.findAvailableSubscriptions();
+    return this.PoolsService.findAvailableSubscriptions();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userSubscriptionsService.findOne(id);
+    return this.PoolsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserSubscriptionDto: UpdateUserSubscriptionDto) {
-    return this.userSubscriptionsService.update(id, updateUserSubscriptionDto);
+  update(@Param('id') id: string, @Body() UpdatePoolDto: UpdatePoolDto) {
+    return this.PoolsService.update(id, UpdatePoolDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userSubscriptionsService.remove(id);
+    return this.PoolsService.remove(id);
   }
 }

@@ -4,13 +4,13 @@ import * as schema from './schema/poolMembers.schems';
 import { CreatePoolMemberDto } from './dto/create-pool-member.dto';
 import { UpdatePoolMemberDto } from './dto/update-pool-member.dto';
 import { eq, and } from 'drizzle-orm';
-import { UserSubscriptionsService } from '../pools/pools.service';
+import { PoolsService } from '../pools/pools.service';
 
 @Injectable()
 export class PoolMembersService {
   constructor(
     private drizzleService: DrizzleService,
-    private userSubscriptionsService: UserSubscriptionsService,
+    private PoolsService: PoolsService,
   ) {}
 
   async create(dto: CreatePoolMemberDto) {
@@ -29,7 +29,7 @@ export class PoolMembersService {
     }
     
     // Get subscription and check availability
-    const subscription = await this.userSubscriptionsService.findOne(dto.userSubscriptionId);
+    const subscription = await this.PoolsService.findOne(dto.userSubscriptionId);
     
     if (!subscription.isActive) {
       throw new BadRequestException('This subscription is not active');
@@ -40,7 +40,7 @@ export class PoolMembersService {
     }
     
     // Decrement available slots
-    await this.userSubscriptionsService.decrementAvailableSlot(dto.userSubscriptionId);
+    await this.PoolsService.decrementAvailableSlot(dto.userSubscriptionId);
     
     // Create pool member
     const result = await this.drizzleService.db.insert(schema.poolMembers).values({
@@ -62,12 +62,12 @@ export class PoolMembersService {
       .from(schema.poolMembers)
       .where(eq(schema.poolMembers.userId, userId))
       .leftJoin(
-        schema.userSubscriptions,
-        eq(schema.poolMembers.userSubscriptionId, schema.userSubscriptions.userSubscriptionId)
+        schema.pools,
+        eq(schema.poolMembers.userSubscriptionId, schema.pools.poolId)
       )
       .leftJoin(
         schema.subscriptionServices,
-        eq(schema.userSubscriptions.serviceId, schema.subscriptionServices.serviceId)
+        eq(schema.pools.serviceId, schema.subscriptionServices.serviceId)
       );
   }
 
@@ -141,10 +141,10 @@ export class PoolMembersService {
     if (!poolMember.userSubscriptionId) {
       throw new BadRequestException('User subscription ID is null');
     }
-    const subscription = await this.userSubscriptionsService.findOne(poolMember.userSubscriptionId);
-    await this.userSubscriptionsService.update(
-      subscription.userSubscriptionId, 
-      { slotsAvailable: subscription.slotsAvailable + 1 }
+    const subscription = await this.PoolsService.findOne(poolMember.userSubscriptionId);
+    await this.PoolsService.update(
+      subscription.poolId, 
+     {slotsAvailable: subscription.slotsAvailable + 1, }
     );
     
     return results[0];

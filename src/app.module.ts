@@ -4,7 +4,7 @@ import { DrizzleModule } from './drizzle/drizzle.module';
 import databaseConfig from './config/database.config';
 import { UserModule } from './users/users.module';
 import configuration from './config/configuration';
-import { UserSubscriptionsModule } from './pools/pools.module';
+import { PoolsModule } from './pools/pools.module';
 import { SubscriptionServicesModule } from './subscription-services/subscription-services.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PoolMembersModule } from './pool-members/pool-members.module';
@@ -18,7 +18,7 @@ import { AuthModule } from 'src/auth/auth.module';
     DrizzleModule,
     UserModule,
     SubscriptionServicesModule,
-    UserSubscriptionsModule,
+    PoolsModule,
     PaymentsModule,
     PoolMembersModule,
     
