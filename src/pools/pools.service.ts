@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {DrizzleService} from 'src/drizzle/drizzle.service';
-import * as schema from './schema/user-subscription.schema';
+import * as schema from './schema/pools.schema';
 import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
 import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
 import { eq, and, gt } from 'drizzle-orm';

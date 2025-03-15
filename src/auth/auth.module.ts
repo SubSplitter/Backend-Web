@@ -3,8 +3,8 @@ import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { UserService } from 'src/users/users.service';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
 import { UserModule } from 'src/users/users.module';
-import { UserSubscriptionsService } from 'src/user-subscriptions/user-subscription.service';
-import { UserSubscriptionsModule } from 'src/user-subscriptions/user-subscription.module';
+import { UserSubscriptionsService } from 'src/pools/pools.service';
+import { UserSubscriptionsModule } from 'src/pools/pools.module';
 
 @Module({
   imports: [

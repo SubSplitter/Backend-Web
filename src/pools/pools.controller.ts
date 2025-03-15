@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
-import { UserSubscriptionsService } from './user-subscription.service';
+import { UserSubscriptionsService } from './pools.service';
 import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
 import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
 import { KindeAuthGuard } from 'src/auth/kinde.guard';

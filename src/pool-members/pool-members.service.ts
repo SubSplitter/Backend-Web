@@ -4,7 +4,7 @@ import * as schema from './schema/poolMembers.schems';
 import { CreatePoolMemberDto } from './dto/create-pool-member.dto';
 import { UpdatePoolMemberDto } from './dto/update-pool-member.dto';
 import { eq, and } from 'drizzle-orm';
-import { UserSubscriptionsService } from '../user-subscriptions/user-subscription.service';
+import { UserSubscriptionsService } from '../pools/pools.service';
 
 @Injectable()
 export class PoolMembersService {

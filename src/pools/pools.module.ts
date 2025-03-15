@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UserSubscriptionsService } from './user-subscription.service';
-import { UserSubscriptionsController } from './user-subscription.controller';
+import { UserSubscriptionsService } from './pools.service';
+import { UserSubscriptionsController } from './pools.controller';
 import { DrizzleModule } from '../drizzle/drizzle.module';
 import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { AuthModule } from 'src/auth/auth.module';
