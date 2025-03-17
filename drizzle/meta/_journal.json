@@ -50,6 +50,13 @@
       "when": 1742064180794,
       "tag": "0006_spooky_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742214439147,
+      "tag": "0007_numerous_satana",
+      "breakpoints": true
     }
   ]
 }

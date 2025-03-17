@@ -22,6 +22,7 @@ export const pools = pgTable('pools', {
   slotsAvailable: integer('slots_available').notNull(),
   costPerSlot: decimal('cost_per_slot', { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp('created_at').defaultNow(),
+  region: varchar('region', { length: 50 }),
   updatedAt: timestamp('updated_at').defaultNow(),
   isActive: boolean('is_active').default(true),
 });
