@@ -20,7 +20,7 @@ export class PoolMembersService {
       .where(
         and(
           eq(schema.poolMembers.userId, dto.userId),
-          eq(schema.poolMembers.userSubscriptionId, dto.userSubscriptionId)
+          eq(schema.poolMembers.userSubscriptionId, dto.poolId)
         )
       );
     
@@ -29,23 +29,23 @@ export class PoolMembersService {
     }
     
     // Get subscription and check availability
-    const subscription = await this.PoolsService.findOne(dto.userSubscriptionId);
+    const pool = await this.PoolsService.findOne(dto.poolId);
     
-    if (!subscription.isActive) {
+    if (!pool.isActive) {
       throw new BadRequestException('This subscription is not active');
     }
     
-    if (subscription.slotsAvailable <= 0) {
+    if (pool.slotsAvailable <= 0) {
       throw new BadRequestException('No available slots in this subscription');
     }
     
     // Decrement available slots
-    await this.PoolsService.decrementAvailableSlot(dto.userSubscriptionId);
+    await this.PoolsService.decrementAvailableSlot(dto.poolId);
     
     // Create pool member
     const result = await this.drizzleService.db.insert(schema.poolMembers).values({
       userId: dto.userId,
-      userSubscriptionId: dto.userSubscriptionId,
+      userSubscriptionId: dto.poolId,
       paymentStatus: 'unpaid', // Default status
       accessStatus: 'pending', // Default status
     }).returning();

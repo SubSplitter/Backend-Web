@@ -1,17 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PoolsService } from './pools.service';
 import { CreatePoolDto } from './dto/create-pool.dto';
 import { UpdatePoolDto } from './dto/update-pool.dto';
 import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { UserService } from 'src/users/users.service';
 import { users } from 'src/drizzle';
+import { PoolMembersService } from 'src/pool-members/pool-members.service';
 
 @Controller('api/subscriptions')
 export class PoolsController {
-  constructor(private readonly PoolsService: PoolsService,
-    private readonly userService: UserService) {}
+  constructor(
+    private readonly PoolsService: PoolsService,
+    private readonly userService: UserService,
+    private readonly poolMembersService: PoolMembersService) {}
   
-  @Post()
+@Post()
 @UseGuards(KindeAuthGuard)
 async create(
   @Req() request: Request,
@@ -53,5 +56,31 @@ async create(
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.PoolsService.remove(id);
+  }
+  @Post(':id/join')
+  @UseGuards(KindeAuthGuard)
+  async joinPool(
+    @Req() request: Request,
+    @Param('id') poolId: string
+  ) {
+    try {
+      // Get the authenticated user's ID
+      const userId = await this.userService.getUserUuidByRequestEmail(request);
+      
+      // Check if pool exists
+      const pool = await this.PoolsService.findOne(poolId);
+      
+      // Create the pool member using the PoolMembersService
+      return await this.poolMembersService.create({
+        userId: userId,
+        poolId: poolId
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error; // Re-throw the original error if it's already a proper HTTP exception
+      }
+      console.error('Error joining pool:', error);
+      throw new BadRequestException('Failed to join pool');
+    }
   }
 }

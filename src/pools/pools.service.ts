@@ -95,7 +95,7 @@ export class PoolsService {
     if (pool.slotsAvailable <= 0) {
       throw new Error('No available slots in this pool'); // Changed from subscription to pool
     }
-
+    console.log(pool.slotsAvailable);
     return this.update(id, { slotsAvailable: pool.slotsAvailable - 1 }); // Changed from subscription to pool
   }
 
