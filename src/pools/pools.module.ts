@@ -9,9 +9,9 @@ import { PoolMembersService } from 'src/pool-members/pool-members.service';
 import { PoolMembersModule } from 'src/pool-members/pool-members.module';
 
 @Module({
-  imports: [DrizzleModule,AuthModule,UserModule],
+  imports: [DrizzleModule, AuthModule, UserModule],
   controllers: [PoolsController],
-  providers: [PoolsService,KindeAuthGuard,PoolMembersService],
+  providers: [PoolsService, KindeAuthGuard, PoolMembersService],
   exports: [PoolsService],
 })
 export class PoolsModule {}

@@ -28,22 +28,21 @@ interface DecodedToken {
 export class KindeAuthGuard implements CanActivate {
   private readonly client: jwksClient.JwksClient;
 
-  constructor(
-    private userService: UserService
-  ) {
+  constructor(private userService: UserService) {
     if (!process.env.KINDE_ISSUER_URL) {
       throw new Error('KINDE_ISSUER_URL environment variable is not set');
     }
-    
+
     this.client = jwksClient({
-      jwksUri: process.env.KINDE_JWKS_URI || `${process.env.KINDE_ISSUER_URL}/.well-known/jwks.json`,
+      jwksUri:
+        process.env.KINDE_JWKS_URI || `${process.env.KINDE_ISSUER_URL}/.well-known/jwks.json`,
     });
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    
+
     if (!token) {
       throw new UnauthorizedException('Authentication token not found');
     }
@@ -51,14 +50,14 @@ export class KindeAuthGuard implements CanActivate {
     try {
       const user = await this.verifyToken(token);
       request.user = user;
-      
+
       const email = user.email;
       if (!email) {
         throw new UnauthorizedException('Email not found in token');
       }
-      
+
       const userResult = await this.userService.getUserByEmail(email);
-      
+
       if (userResult.length > 0) {
         const userRecord = userResult[0];
         request.user_id = userRecord.userId;
@@ -67,7 +66,7 @@ export class KindeAuthGuard implements CanActivate {
       } else {
         throw new UnauthorizedException('User not found');
       }
-      
+
       return true;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
@@ -96,25 +95,21 @@ export class KindeAuthGuard implements CanActivate {
 
   private async verifyToken(token: string): Promise<JwtPayload> {
     const decoded = jwt.decode(token, { complete: true }) as DecodedToken | null;
-    
+
     if (!decoded?.header?.kid) {
       throw new UnauthorizedException('Invalid token format');
     }
-    
+
     if (!process.env.KINDE_ISSUER_URL) {
       throw new Error('Required environment variables are not set');
     }
-    
+
     const publicKey = await this.getSigningKey(decoded.header.kid);
-    
-    return promisify<string, string, jwt.VerifyOptions, JwtPayload>(jwt.verify)(
-      token,
-      publicKey,
-      {
-        algorithms: ['RS256'],
-        issuer: process.env.KINDE_ISSUER_URL,
-        complete: false,
-      },
-    );
+
+    return promisify<string, string, jwt.VerifyOptions, JwtPayload>(jwt.verify)(token, publicKey, {
+      algorithms: ['RS256'],
+      issuer: process.env.KINDE_ISSUER_URL,
+      complete: false,
+    });
   }
 }

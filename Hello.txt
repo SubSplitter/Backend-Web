@@ -31,3 +31,17 @@ Apis
 - POST /api/access/{subscription_id}: For members to retrieve access credentials (after payment is confirmed).
 
 - POST /api/disputes: To file a dispute.
+
+
+Want to Go Pro?
+Once your MVP is done:
+
+Add rate-limiting (if public)
+
+Setup email/notification flows
+
+Add admin dashboard
+
+Monitor app via logging + alerts
+
+Deploy with Docker + Fly.io/Vercel + Railway

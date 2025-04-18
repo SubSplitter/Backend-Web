@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PoolsService } from './pools.service';
 import { CreatePoolDto } from './dto/create-pool.dto';
 import { UpdatePoolDto } from './dto/update-pool.dto';
@@ -12,26 +24,24 @@ export class PoolsController {
   constructor(
     private readonly PoolsService: PoolsService,
     private readonly userService: UserService,
-    private readonly poolMembersService: PoolMembersService) {}
-  
-@Post()
-@UseGuards(KindeAuthGuard)
-async create(
-  @Req() request: Request,
-  @Body() CreatePoolDto: CreatePoolDto
-) {
-  // You'll need to add the custom typing for the request as discussed earlier
-  const userEmail = (request as any).user_email;
-  console.log(userEmail);
-  CreatePoolDto.userId = await this.userService.getUserUuidByRequestEmail(request);
-  console.log(CreatePoolDto.userId);
-  
-  // You can now use the email with your DTO
-  return this.PoolsService.create({
-    ...CreatePoolDto,
-   // Assuming your service needs this
-  });
-}
+    private readonly poolMembersService: PoolMembersService,
+  ) {}
+
+  @Post()
+  @UseGuards(KindeAuthGuard)
+  async create(@Req() request: Request, @Body() CreatePoolDto: CreatePoolDto) {
+    // You'll need to add the custom typing for the request as discussed earlier
+    const userEmail = (request as any).user_email;
+    console.log(userEmail);
+    CreatePoolDto.userId = await this.userService.getUserUuidByRequestEmail(request);
+    console.log(CreatePoolDto.userId);
+
+    // You can now use the email with your DTO
+    return this.PoolsService.create({
+      ...CreatePoolDto,
+      // Assuming your service needs this
+    });
+  }
 
   @Get()
   findAll() {
@@ -59,21 +69,18 @@ async create(
   }
   @Post(':id/join')
   @UseGuards(KindeAuthGuard)
-  async joinPool(
-    @Req() request: Request,
-    @Param('id') poolId: string
-  ) {
+  async joinPool(@Req() request: Request, @Param('id') poolId: string) {
     try {
       // Get the authenticated user's ID
       const userId = await this.userService.getUserUuidByRequestEmail(request);
-      
+
       // Check if pool exists
       const pool = await this.PoolsService.findOne(poolId);
-      
+
       // Create the pool member using the PoolMembersService
       return await this.poolMembersService.create({
         userId: userId,
-        poolId: poolId
+        poolId: poolId,
       });
     } catch (error) {
       if (error instanceof BadRequestException || error instanceof NotFoundException) {

@@ -2,11 +2,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SubscriptionServicesService } from './subscription-services.service';
 import { CreateSubscriptionServiceDto } from './dto/create-subscription-service.dto';
-import { UpdateSubscriptionServiceDto } from './dto/update-subscription-service.dto';;
+import { UpdateSubscriptionServiceDto } from './dto/update-subscription-service.dto';
 @Controller('api/subscription-services')
 export class SubscriptionServicesController {
   constructor(private readonly subscriptionServicesService: SubscriptionServicesService) {}
-
 
   @Post()
   create(@Body() createSubscriptionServiceDto: CreateSubscriptionServiceDto) {

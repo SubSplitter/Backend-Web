@@ -26,18 +26,18 @@ export class UserService {
   async getUserUuidByRequestEmail(request: any) {
     const userEmail = request.user_email;
     console.log('User email from request:', userEmail);
-    
+
     // Use the existing getUserByEmail method to fetch the user
     const userResult = await this.getUserByEmail(userEmail);
-    
+
     // getUserByEmail returns an array due to the select() from drizzle
     // Since you used limit(1), you can get the first (and only) user
     const user = userResult[0];
-    
+
     if (!user) {
       throw new NotFoundException(`User with email ${userEmail} not found`);
     }
-    
+
     return user.userId; // Return just the UUID
   }
 }

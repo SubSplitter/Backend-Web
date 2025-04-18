@@ -13,13 +13,7 @@ import { PoolsService } from 'src/pools/pools.service';
     UserModule,
     //PoolsModule
   ],
-  providers: [
-    KindeAuthGuard,
-    UserService,
-    PoolsService
-  ],
-  exports: [
-    KindeAuthGuard,
-  ],
+  providers: [KindeAuthGuard, UserService, PoolsService],
+  exports: [KindeAuthGuard],
 })
 export class AuthModule {}

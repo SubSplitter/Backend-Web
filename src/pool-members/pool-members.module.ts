@@ -4,9 +4,10 @@ import { PoolMembersService } from './pool-members.service';
 import { PoolMembersController } from './pool-members.controller';
 import { DrizzleModule } from '../drizzle/drizzle.module';
 import { PoolsModule } from '../pools/pools.module';
+import { UserModule } from 'src/users/users.module';
 
 @Module({
-  imports: [DrizzleModule, PoolsModule],
+  imports: [DrizzleModule, PoolsModule, UserModule],
   controllers: [PoolMembersController],
   providers: [PoolMembersService],
   exports: [PoolMembersService],

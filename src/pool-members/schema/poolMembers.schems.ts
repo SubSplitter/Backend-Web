@@ -13,7 +13,6 @@ export const poolMembers = pgTable('pool_members', {
   lastPaymentDate: timestamp('last_payment_date'),
 });
 
-
 // Re-export for joins
 export { pools } from '../../pools/schema/pools.schema';
 export { subscriptionServices } from '../../subscription-services/schema/subscriptions-services.schema';

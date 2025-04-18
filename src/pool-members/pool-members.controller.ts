@@ -1,11 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { PoolMembersService } from './pool-members.service';
 import { CreatePoolMemberDto } from './dto/create-pool-member.dto';
 import { UpdatePoolMemberDto } from './dto/update-pool-member.dto';
+import { KindeAuthGuard } from 'src/auth/kinde.guard';
+import { UserService } from 'src/users/users.service';
 
 @Controller('api/pool-members')
 export class PoolMembersController {
-  constructor(private readonly poolMembersService: PoolMembersService) {}
+  constructor(
+    private readonly poolMembersService: PoolMembersService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   create(@Body() createPoolMemberDto: CreatePoolMemberDto) {
@@ -15,6 +20,13 @@ export class PoolMembersController {
   @Get()
   findAll() {
     return this.poolMembersService.findAll();
+  }
+
+  @Get('current-user')
+  @UseGuards(KindeAuthGuard)
+  async getCurrentUserMemberships(@Req() request: Request) {
+    const userId = await this.userService.getUserUuidByRequestEmail(request);
+    return this.poolMembersService.findByUserId(userId);
   }
 
   @Get('user/:userId')
@@ -33,10 +45,7 @@ export class PoolMembersController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePoolMemberDto: UpdatePoolMemberDto,
-  ) {
+  update(@Param('id') id: string, @Body() updatePoolMemberDto: UpdatePoolMemberDto) {
     return this.poolMembersService.update(id, updatePoolMemberDto);
   }
 

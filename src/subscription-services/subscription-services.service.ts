@@ -1,6 +1,6 @@
 // src/subscription-services/subscription-services.service.ts
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from 'src/drizzle/drizzle.service'
+import { DrizzleService } from 'src/drizzle/drizzle.service';
 import * as schema from './schema/subscriptions-services.schema';
 import { CreateSubscriptionServiceDto } from './dto/create-subscription-service.dto';
 import { UpdateSubscriptionServiceDto } from './dto/update-subscription-service.dto';
@@ -23,7 +23,7 @@ export class SubscriptionServicesService {
         logoUrl: null,
         color: null,
         category: null,
-        featuredPosition: null
+        featuredPosition: null,
       })
       .returning();
     return result[0];
@@ -40,10 +40,10 @@ export class SubscriptionServicesService {
       .where(eq(schema.subscriptionServices.serviceId, id));
     return results[0];
   }
-  
+
   async update(id: string, dto: UpdateSubscriptionServiceDto) {
     const updateData: any = {};
-  
+
     if (dto.name !== undefined) {
       updateData.name = dto.name;
       // Also update the slug when name changes
@@ -52,18 +52,18 @@ export class SubscriptionServicesService {
     if (dto.description !== undefined) updateData.description = dto.description;
     // Remove monthlyCost update
     if (dto.regionsAvailable !== undefined) updateData.regionsAvailable = dto.regionsAvailable;
-  
+
     updateData.updatedAt = new Date();
-  
+
     const results = await this.drizzleService.db
       .update(schema.subscriptionServices)
       .set(updateData)
       .where(eq(schema.subscriptionServices.serviceId, id))
       .returning();
-  
+
     return results[0];
   }
-  
+
   async remove(id: string) {
     return this.drizzleService.db
       .delete(schema.subscriptionServices)

@@ -1,12 +1,11 @@
-import { Controller, Post, BadRequestException, Req } from "@nestjs/common";
+import { Controller, Post, BadRequestException, Req } from '@nestjs/common';
 import { Request } from 'express';
-import * as jwksClient from "jwks-rsa";
-import * as jwt from "jsonwebtoken";
-import { UserDto } from "./user.dto";
-import { UserService } from "./users.service";
+import * as jwksClient from 'jwks-rsa';
+import * as jwt from 'jsonwebtoken';
+import { UserDto } from './user.dto';
+import { UserService } from './users.service';
 
-
-@Controller("users")
+@Controller('users')
 export class UserController {
   private client = jwksClient({
     jwksUri: `${process.env.KINDE_ISSUER_URL}/.well-known/jwks.json`,
@@ -24,13 +23,13 @@ export class UserController {
       const token = Buffer.concat(chunks).toString('utf8');
 
       if (!token) {
-        throw new BadRequestException("Token is missing");
+        throw new BadRequestException('Token is missing');
       }
 
       // Decode the token
       const decoded = jwt.decode(token, { complete: true }) as any;
       if (!decoded || !decoded.header) {
-        throw new BadRequestException("Invalid token");
+        throw new BadRequestException('Invalid token');
       }
 
       const { kid } = decoded.header;
@@ -39,32 +38,31 @@ export class UserController {
 
       // Verify the token
       const event = jwt.verify(token, signingKey) as any;
-      console.log("User created:", event.data);
+      console.log('User created:', event.data);
       // Handle various events
       switch (event?.type) {
-        case "user.updated":
-         
+        case 'user.updated':
           break;
-          
-        case "user.created":
+
+        case 'user.created':
           const userDto = new UserDto();
           userDto.email = event.data.user.email;
           userDto.role = 'user'; // Default role for new users
-          
+
           // Save the user to the database
           const newUser = await this.userService.createUser(userDto);
-          console.log("User successfully saved to database:", newUser)
+          console.log('User successfully saved to database:', newUser);
           break;
-          
+
         default:
           // other events that we don't handle
-          console.log("Unhandled event type:", event.type);
+          console.log('Unhandled event type:', event.type);
           break;
       }
 
-      return { status: 200, statusText: "success" };
+      return { status: 200, statusText: 'success' };
     } catch (err) {
-      console.error("Webhook error:", err.message);
+      console.error('Webhook error:', err.message);
       throw new BadRequestException(err.message);
     }
   }
