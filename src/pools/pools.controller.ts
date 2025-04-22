@@ -18,6 +18,7 @@ import { KindeAuthGuard } from 'src/auth/kinde.guard';
 import { UserService } from 'src/users/users.service';
 import { users } from 'src/drizzle';
 import { PoolMembersService } from 'src/pool-members/pool-members.service';
+import { request } from 'http';
 
 @Controller('api/subscriptions')
 export class PoolsController {
@@ -44,8 +45,10 @@ export class PoolsController {
   }
 
   @Get()
-  findAll() {
-    return this.PoolsService.findAll();
+  findAll(@Req() request: Request) {
+    // If user is authenticated, get userId, otherwise undefined
+    const userId = (request as any).userId;
+    return this.PoolsService.findAll(userId);
   }
 
   @Get('available')

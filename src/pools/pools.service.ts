@@ -5,6 +5,7 @@ import * as schema from './schema/pools.schema';
 import { CreatePoolDto } from './dto/create-pool.dto'; // Renamed from CreateUserSubscriptionDto
 import { UpdatePoolDto } from './dto/update-pool.dto'; // Renamed from UpdateUserSubscriptionDto
 import { eq, and, gt } from 'drizzle-orm';
+import { poolMembers } from 'src/pool-members/schema/poolMembers.schems';
 
 @Injectable()
 export class PoolsService {
@@ -29,9 +30,29 @@ export class PoolsService {
 
     return result[0];
   }
-
-  async findAll() {
-    return this.drizzleService.db.select().from(schema.pools); // Changed from userSubscriptions to pools
+  // new get pools method with isjoinec flag includen in api response
+  async findAll(userId?: string) {
+    const allPools = await this.drizzleService.db.select().from(schema.pools);
+    
+    // If no userId is provided, return pools without isJoined flag
+    if (!userId) {
+      return allPools;
+    }
+    
+    // Get all pools this user is a member of
+    const userPoolMemberships = await this.drizzleService.db
+      .select({ poolId: poolMembers.userSubscriptionId })
+      .from(poolMembers)
+      .where(eq(poolMembers.userId, userId));
+    
+    // Create a Set of pool IDs the user has joined for efficient lookup
+    const joinedPoolIds = new Set(userPoolMemberships.map(m => m.poolId));
+    
+    // Return pools with isJoined flag
+    return allPools.map(pool => ({
+      ...pool,
+      isJoined: joinedPoolIds.has(pool.poolId)
+    }));
   }
 
   async findAvailableSubscriptions() {
