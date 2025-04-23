@@ -43,12 +43,28 @@ export class PoolsController {
       // Assuming your service needs this
     });
   }
-
+  @UseGuards(KindeAuthGuard)
   @Get()
-  findAll(@Req() request: Request) {
-    // If user is authenticated, get userId, otherwise undefined
-    const userId = (request as any).userId;
-    return this.PoolsService.findAll(userId);
+  async findAll(@Req() request: Request) {
+    // Debug the request object to see what's available
+    console.log('User email from request:', (request as any).user_email);
+    
+    
+    // Only try to get userId if we have an email
+    let userId: string | undefined = undefined;
+    
+    if ((request as any).user_email) {
+      try {
+        userId = await this.userService.getUserUuidByRequestEmail(request);
+        console.log('Retrieved userId:', userId);
+      } catch (error) {
+        console.log('Error getting userId:', error.message);
+        // Continue with userId as undefined
+      }
+    }
+    
+    // Whether we got a userId or not, call the service
+    return await this.PoolsService.findAll(userId);
   }
 
   @Get('available')

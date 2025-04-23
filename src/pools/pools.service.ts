@@ -30,7 +30,7 @@ export class PoolsService {
 
     return result[0];
   }
-  // new get pools method with isjoinec flag includen in api response
+  // new get pools method with isjoined flag includen in api response
   async findAll(userId?: string) {
     const allPools = await this.drizzleService.db.select().from(schema.pools);
     
