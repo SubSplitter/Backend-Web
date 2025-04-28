@@ -10,15 +10,15 @@ async function bootstrap() {
     '/kinde-webhook',
     express.raw({
       type: '*/*',
-      limit: '1mb'
-    })
+      limit: '1mb',
+    }),
   );
-  
+
   // Regular JSON parser for other routes
-  app.use(express.json())
+  app.use(express.json());
   // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:3000', // Allow frontend origin
+    origin: ['http://localhost:3000', 'https://www.subspliter.com'], // Allow frontend origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true, // Allow cookies if needed

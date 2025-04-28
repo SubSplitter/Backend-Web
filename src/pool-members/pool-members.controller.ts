@@ -30,31 +30,8 @@ export class PoolMembersController {
 
     // Extract only the pools data with proper null checks
     return memberships
-      .filter((membership) => membership.pools && membership.pool_members)
-      .map((membership) => {
-        // Create a base object with safely accessed properties
-        const poolData: any = {
-          poolId: membership.pools?.poolId,
-          name: membership.pools?.name,
-          serviceId: membership.pools?.serviceId,
-          slotsTotal: membership.pools?.slotsTotal,
-          slotsAvailable: membership.pools?.slotsAvailable,
-          costPerSlot: membership.pools?.costPerSlot,
-          membershipStatus: {
-            paymentStatus: membership.pool_members?.paymentStatus,
-            accessStatus: membership.pool_members?.accessStatus,
-            joinedAt: membership.pool_members?.joinedAt,
-          },
-        };
-
-        // Add service info if available
-        if (membership.subscription_services) {
-          poolData.serviceName = membership.subscription_services.name;
-          poolData.serviceLogoUrl = membership.subscription_services.logoUrl;
-        }
-
-        return poolData;
-      });
+      .map((membership) => membership.pools)
+      .filter((pools): pools is NonNullable<typeof pools> => pools !== null);
   }
 
   @Get('user/:userId')
