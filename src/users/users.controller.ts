@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken';
 import { UserDto } from './user.dto';
 import { UserService } from './users.service';
 
-@Controller('users')
+@Controller('api/users')
 export class UserController {
   private client = jwksClient({
     jwksUri: `${process.env.KINDE_ISSUER_URL}/.well-known/jwks.json`,
