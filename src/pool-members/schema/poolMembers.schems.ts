@@ -11,6 +11,10 @@ export const poolMembers = pgTable('pool_members', {
   paymentStatus: varchar('payment_status', { length: 50 }).notNull(),
   accessStatus: varchar('access_status', { length: 50 }).notNull(),
   lastPaymentDate: timestamp('last_payment_date'),
+  // ✅ New column
+  membershipStatus: varchar('membership_status', { length: 20 })
+    .notNull()
+    .$default(() => 'active'), // default to 'active'
 });
 
 // Re-export for joins

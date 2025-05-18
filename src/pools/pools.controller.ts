@@ -48,11 +48,10 @@ export class PoolsController {
   async findAll(@Req() request: Request) {
     // Debug the request object to see what's available
     console.log('User email from request:', (request as any).user_email);
-    
-    
+
     // Only try to get userId if we have an email
     let userId: string | undefined = undefined;
-    
+
     if ((request as any).user_email) {
       try {
         userId = await this.userService.getUserUuidByRequestEmail(request);
@@ -62,7 +61,7 @@ export class PoolsController {
         // Continue with userId as undefined
       }
     }
-    
+
     // Whether we got a userId or not, call the service
     return await this.PoolsService.findAll(userId);
   }

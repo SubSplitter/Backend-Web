@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { PoolMembersService } from './pool-members.service';
 import { CreatePoolMemberDto } from './dto/create-pool-member.dto';
 import { UpdatePoolMemberDto } from './dto/update-pool-member.dto';
@@ -68,6 +79,28 @@ export class PoolMembersController {
     @Param('status') status: 'unpaid' | 'processing' | 'paid' | 'failed',
   ) {
     return this.poolMembersService.updatePaymentStatus(id, status);
+  }
+
+  @Patch(':id/membership/:status')
+  updateMembershipStatus(
+    @Param('id') id: string,
+    @Param('status') status: 'active' | 'inactive' | 'left',
+  ) {
+    return this.poolMembersService.updateMembershipStatus(id, status);
+  }
+
+  @Post(':id/leave')
+  @UseGuards(KindeAuthGuard)
+  async leavePool(@Param('id') id: string, @Req() request: Request) {
+    // Optional: Verify that the logged-in user is the owner of this membership
+    const userId = await this.userService.getUserUuidByRequestEmail(request);
+    const membership = await this.poolMembersService.findOne(id);
+
+    if (membership.userId !== userId) {
+      throw new BadRequestException('You do not have permission to leave this pool');
+    }
+
+    return this.poolMembersService.leavePool(id);
   }
 
   @Delete(':id')

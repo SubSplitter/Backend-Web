@@ -3,4 +3,5 @@ export class UpdatePoolMemberDto {
   paymentStatus?: 'unpaid' | 'processing' | 'paid' | 'failed';
   accessStatus?: 'pending' | 'granted' | 'revoked';
   lastPaymentDate?: Date;
+  membershipStatus?: 'active' | 'inactive' | 'left';
 }

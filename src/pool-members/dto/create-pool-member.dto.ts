@@ -1,5 +1,5 @@
 // src/pool-members/dto/create-pool-member.dto.ts
 export class CreatePoolMemberDto {
-    userId: string;
-    poolId: string;
-  }
+  userId: string;
+  poolId: string;
+}

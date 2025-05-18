@@ -99,6 +99,7 @@ export class PoolMembersService {
     if (dto.paymentStatus !== undefined) updateData.paymentStatus = dto.paymentStatus;
     if (dto.accessStatus !== undefined) updateData.accessStatus = dto.accessStatus;
     if (dto.lastPaymentDate !== undefined) updateData.lastPaymentDate = dto.lastPaymentDate;
+    if (dto.membershipStatus !== undefined) updateData.membershipStatus = dto.membershipStatus;
 
     const results = await this.drizzleService.db
       .update(schema.poolMembers)
@@ -127,6 +128,35 @@ export class PoolMembersService {
     }
 
     return this.update(id, updateData);
+  }
+
+  async updateMembershipStatus(id: string, status: 'active' | 'inactive' | 'left') {
+    return this.update(id, { membershipStatus: status });
+  }
+
+  async leavePool(id: string) {
+    // Get the pool member to find associated subscription
+    const poolMember = await this.findOne(id);
+
+    // Check if the pool member has already left
+    if (poolMember.membershipStatus === 'left') {
+      throw new BadRequestException('User has already left this pool');
+    }
+
+    // Update membership status to 'left'
+    await this.updateMembershipStatus(id, 'left');
+
+    // Increment available slots in the subscription
+    if (!poolMember.userSubscriptionId) {
+      throw new BadRequestException('User subscription ID is null');
+    }
+
+    const subscription = await this.PoolsService.findOne(poolMember.userSubscriptionId);
+    await this.PoolsService.update(subscription.poolId, {
+      slotsAvailable: subscription.slotsAvailable + 1,
+    });
+
+    return { message: 'Successfully left the pool', memberId: id };
   }
 
   async remove(id: string) {
