@@ -66,6 +66,28 @@ export class PoolsController {
     return await this.PoolsService.findAll(userId);
   }
 
+  @UseGuards(KindeAuthGuard)
+  @Get('my-created')
+  async findCreatedByUser(@Req() request: Request) {
+    try {
+      // Get the authenticated user's ID
+      const userId = await this.userService.getUserUuidByRequestEmail(request);
+      
+      if (!userId) {
+        throw new BadRequestException('User not found');
+      }
+      
+      // Call a new method in PoolsService to find pools created by this user
+      return await this.PoolsService.findPoolsCreatedByUser(userId);
+    } catch (error) {
+      console.error('Error fetching created pools:', error);
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error; // Re-throw if it's already a proper HTTP exception
+      }
+      throw new BadRequestException('Failed to fetch created pools');
+    }
+  }
+
   @Get('available')
   findAvailable() {
     return this.PoolsService.findAvailableSubscriptions();

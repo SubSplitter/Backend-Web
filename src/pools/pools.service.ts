@@ -109,7 +109,20 @@ export class PoolsService {
 
     return results[0];
   }
-
+  async findPoolsCreatedByUser(userId: string) {
+    const results = await this.drizzleService.db
+      .select()
+      .from(schema.pools)
+      .where(eq(schema.pools.userId, userId));
+      
+    // Return empty array if no pools found instead of throwing an error
+    // since it's normal for a user to have no pools
+    if (results.length === 0) {
+      return [];
+    }
+    
+    return results;
+  }
   async decrementAvailableSlot(id: string) {
     const pool = await this.findOne(id); // Changed from subscription to pool
 
