@@ -33,16 +33,37 @@ export class PoolMembersController {
     return this.poolMembersService.findAll();
   }
 
+  //kitne joined hai
   @Get('current-user')
   @UseGuards(KindeAuthGuard)
   async getCurrentUserMemberships(@Req() request: Request) {
     const userId = await this.userService.getUserUuidByRequestEmail(request);
     const memberships = await this.poolMembersService.findByUserId(userId);
 
-    // Extract only the pools data with proper null checks
-    return memberships
-      .map((membership) => membership.pools)
-      .filter((pools): pools is NonNullable<typeof pools> => pools !== null);
+    // Filter out memberships where the user has left
+    const activeMemberships = memberships.filter(
+      (membership) => membership.pool_members?.membershipStatus !== 'left',
+    );
+
+    // Transform the data to include both pool and membership information
+    return activeMemberships
+      .map((membership) => {
+        if (!membership.pools) {
+          return null;
+        }
+
+        return {
+          ...membership.pools,
+          membershipStatus: membership.pool_members?.membershipStatus || 'active',
+          membershipId: membership.pool_members?.poolMemberId,
+          memberInfo: {
+            paymentStatus: membership.pool_members?.paymentStatus || 'unpaid',
+            accessStatus: membership.pool_members?.accessStatus || 'pending',
+            joinedAt: membership.pool_members?.joinedAt,
+          },
+        };
+      })
+      .filter(Boolean); // Remove any null entries
   }
 
   @Get('user/:userId')
