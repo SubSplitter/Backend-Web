@@ -33,25 +33,25 @@ export class PoolsService {
   // new get pools method with isjoined flag includen in api response
   async findAll(userId?: string) {
     const allPools = await this.drizzleService.db.select().from(schema.pools);
-    
+
     // If no userId is provided, return pools without isJoined flag
     if (!userId) {
       return allPools;
     }
-    
+
     // Get all pools this user is a member of
     const userPoolMemberships = await this.drizzleService.db
       .select({ poolId: poolMembers.userSubscriptionId })
       .from(poolMembers)
       .where(eq(poolMembers.userId, userId));
-    
+
     // Create a Set of pool IDs the user has joined for efficient lookup
-    const joinedPoolIds = new Set(userPoolMemberships.map(m => m.poolId));
-    
+    const joinedPoolIds = new Set(userPoolMemberships.map((m) => m.poolId));
+
     // Return pools with isJoined flag
-    return allPools.map(pool => ({
+    return allPools.map((pool) => ({
       ...pool,
-      isJoined: joinedPoolIds.has(pool.poolId)
+      isJoined: joinedPoolIds.has(pool.poolId),
     }));
   }
 
@@ -114,13 +114,13 @@ export class PoolsService {
       .select()
       .from(schema.pools)
       .where(eq(schema.pools.userId, userId));
-      
+
     // Return empty array if no pools found instead of throwing an error
     // since it's normal for a user to have no pools
     if (results.length === 0) {
       return [];
     }
-    
+
     return results;
   }
   async decrementAvailableSlot(id: string) {

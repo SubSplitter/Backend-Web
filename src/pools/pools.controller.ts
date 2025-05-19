@@ -72,11 +72,11 @@ export class PoolsController {
     try {
       // Get the authenticated user's ID
       const userId = await this.userService.getUserUuidByRequestEmail(request);
-      
+
       if (!userId) {
         throw new BadRequestException('User not found');
       }
-      
+
       // Call a new method in PoolsService to find pools created by this user
       return await this.PoolsService.findPoolsCreatedByUser(userId);
     } catch (error) {
